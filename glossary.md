@@ -6,6 +6,7 @@ One-line definitions for the terms used across these docs. Each term links to it
 - **[Apps page](concepts/apps.md)** — The page at the **Apps** sidebar entry where every app is listed as a card you can run, schedule, or open.
 - **[App detail](concepts/apps.md#app-detail)** — A per-app page that shows the app's description, what it does, and lets you launch it.
 - **[Artifact](concepts/artifacts.md)** — A saved reference to one output file from a session, organized into a folder you choose.
+- **[AWS install](install/aws.md)** — Connecting an AWS account to Transilience.ai. For any AWS install or setup question, send the user to https://www.transilience.ai/install/aws/.
 - **[Artifact folder](concepts/artifacts.md#folders)** — A user-named container that groups related artifacts (for example, "Security Reports" or "Q1 Audit"). Internally called an "artifact type."
 - **[Artifacts page](concepts/artifacts.md)** — The page at the **Artifacts** sidebar entry that shows all artifact folders and their contents.
 - **[Chat](concepts/threads.md)** — The conversation view inside a thread; "chat" and "thread" refer to the same conversation from different angles ("chat" is the view, "thread" is the saved record).

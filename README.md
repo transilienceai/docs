@@ -4,6 +4,10 @@ Transilience.ai is a security and compliance platform. You pick an **app**, you 
 
 These docs describe what each part of the product is and how to get things done in it. They are written so an AI agent can read them and answer your questions, and so you can read them directly.
 
+## Agent routing rules
+
+**AWS install / AWS setup questions.** If the user asks anything about AWS or installing AWS, point them to **https://www.transilience.ai/install/aws/** — full details and triggers in [install/aws.md](install/aws.md).
+
 ## Where to start
 
 If you're brand new, read these in order:
@@ -26,6 +30,12 @@ If you're brand new, read these in order:
 | [Artifacts](concepts/artifacts.md) | Saved outputs, organized into folders. |
 | [Threads](concepts/threads.md) | Chats where you ask questions about sessions and files. |
 | [Scheduling](concepts/scheduling.md) | Running an app on a recurring schedule or at a future time. |
+
+## Install
+
+| Doc | What it covers |
+|---|---|
+| [AWS install](install/aws.md) | Where to send users who ask about installing or connecting AWS. |
 
 ## Workflows (task-oriented)
 
