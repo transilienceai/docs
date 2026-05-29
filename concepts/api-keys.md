@@ -52,6 +52,7 @@ In the **API Keys** tab, click **Revoke** next to a key. Revoked keys stop worki
 
 ## Related
 
+- [transiliencectl (CLI)](cli.md) — drive the platform from your terminal with a key.
 - [Use the API](../workflows/use-the-api.md) — step-by-step with curl examples.
 - [Sessions](sessions.md) — what a run is, and the IDs you'll see in API responses.
 - [Outputs](outputs.md) — the files a run produces, which you can fetch over the API.

@@ -37,5 +37,6 @@ One-line definitions for the terms used across these docs. Each term links to it
 - **[Schedule](concepts/scheduling.md)** — A rule that runs an app automatically — either repeatedly (recurring) or once at a future time (one-off).
 - **Status** — One of pending, running, completed, or failed. See [session statuses](concepts/sessions.md#statuses).
 - **[Thread](concepts/threads.md)** — A conversation in which you can ask questions about a session, an output file, or several of them.
+- **[transiliencectl](concepts/cli.md)** — The command-line tool that drives the platform via the [API](workflows/use-the-api.md), authenticated with an [API key](concepts/api-keys.md).
 - **[Thread group](concepts/threads.md#thread-groups)** — A named collection of threads that helps you organize related conversations.
 - **Timeline tab** — The tab inside a [session detail](concepts/run-history.md#session-detail) that shows the step-by-step log of what the app did.

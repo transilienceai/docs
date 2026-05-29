@@ -74,6 +74,7 @@ The agent reads the guide, then makes the same calls shown above on your behalf 
 
 ## Related
 
+- [Use the CLI](use-the-cli.md) — the same loop via the `transiliencectl` command-line tool.
 - [API keys](../concepts/api-keys.md) — creating, binding, and revoking keys.
 - [Run an app](run-an-app.md) — the same flow from the web UI.
 - [Sessions](../concepts/sessions.md) and [Outputs](../concepts/outputs.md) — what the responses contain.
