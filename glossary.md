@@ -2,6 +2,8 @@
 
 One-line definitions for the terms used across these docs. Each term links to its concept page where one exists.
 
+- **[API](workflows/use-the-api.md)** — The HTTP interface that lets a script or AI agent do what you do in the app — run apps, read sessions and outputs — authenticated with an [API key](concepts/api-keys.md).
+- **[API key](concepts/api-keys.md)** — A long-lived credential for calling the API on your behalf, sent as `Authorization: Bearer <key>`. Created in **Settings → API Keys**, bound to one organization, and shown only once.
 - **[App](concepts/apps.md)** — A reusable security or compliance workflow you can run; the catalog lives on the **Apps** page in the sidebar. ("Project" is the internal name for the same thing.)
 - **[Apps page](concepts/apps.md)** — The page at the **Apps** sidebar entry where every app is listed as a card you can run, schedule, or open.
 - **[App detail](concepts/apps.md#app-detail)** — A per-app page that shows the app's description, what it does, and lets you launch it.
@@ -16,6 +18,7 @@ One-line definitions for the terms used across these docs. Each term links to it
 - **[Data file](concepts/outputs.md#data-files)** — A structured output file (typically JSON or CSV) produced by an app — usually raw scan results before they are summarized into a report.
 - **Failed** — A [session status](concepts/sessions.md#statuses) meaning the app encountered an error and did not finish.
 - **Files tab** — The tab inside a [session detail](concepts/run-history.md#session-detail) that lists every output file the app produced.
+- **llms.txt** — A machine-readable guide to the [API](workflows/use-the-api.md), served at `/llms.txt`. Hand its URL plus an [API key](concepts/api-keys.md) to an AI agent so it can call the platform for you.
 - **[Live Activity](concepts/live-activity.md)** — The page that shows a session while it is running, with the timeline and log streaming in real time.
 - **New Thread** — The sidebar button that starts a new empty [thread](concepts/threads.md).
 - **[Notifications](concepts/live-activity.md#notifications)** — The Notifications tab inside the chat area where running and recently-finished sessions appear.
