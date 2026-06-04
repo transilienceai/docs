@@ -1,4 +1,4 @@
-# Application Briefs — Claude Compliance Suite
+# Application Briefs
 
 A reference to every application in `projects/`: what each one does, how it works, and an architecture diagram. Briefs reflect the **latest committed logic** (`CLAUDE.md` + `project.json` per project).
 
