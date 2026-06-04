@@ -30,6 +30,8 @@ If you're brand new, read these in order:
 | [Artifacts](concepts/artifacts.md) | Saved outputs, organized into folders. |
 | [Threads](concepts/threads.md) | Chats where you ask questions about sessions and files. |
 | [Scheduling](concepts/scheduling.md) | Running an app on a recurring schedule or at a future time. |
+| [API keys](concepts/api-keys.md) | Long-lived keys to call the API from a script or an AI agent. |
+| [transiliencectl (CLI)](concepts/cli.md) | The command-line tool for driving the platform with an API key. |
 
 ## Install
 
@@ -45,6 +47,8 @@ If you're brand new, read these in order:
 | [Save an artifact](workflows/save-an-artifact.md) | Take an output from a session and save it into an artifact folder. |
 | [Ask about a session](workflows/ask-about-a-session.md) | Open a thread on one or more sessions and ask questions about the results. |
 | [Schedule an app](workflows/schedule-an-app.md) | Set an app to run on a recurring schedule or at a specific time. |
+| [Use the API](workflows/use-the-api.md) | Drive the platform from a script or AI agent with an API key (curl examples). |
+| [Use the CLI](workflows/use-the-cli.md) | Drive the platform from your terminal with transiliencectl. |
 
 ## Glossary
 
