@@ -16,8 +16,6 @@ The page shows a grid of your folders. Click a folder to see the artifacts insid
 
 A **folder** is just a named bin — you make as many as you want and pick whichever ones make sense. Folder names are free text; you choose them when you save an artifact or by creating a folder from the Artifacts page.
 
-(Internally, a folder is called an "artifact type." You'll see "folder" in the UI and "artifact type" in some URLs and labels — they're the same thing.)
-
 ## What an artifact is, exactly
 
 Each artifact is a reference to one specific output file from one specific session. The artifact remembers:

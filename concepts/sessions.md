@@ -4,7 +4,7 @@
 
 A **session** is one run of an [app](apps.md). When you click **Run App**, a session is created. While the app is working, the session is in progress; when it's done, the session is finished and its [outputs](outputs.md) are available to view, save, and ask about.
 
-"Session" and "run" mean the same thing. Some parts of the UI say "run" (as in "Run History," "Recent Runs," "Run App"); the backend and URLs say "session." They refer to the same object.
+"Session" and "run" mean the same thing. Some parts of the UI say "run" (as in "Run History," "Recent Runs," "Run App"); other parts and the URLs say "session." They refer to the same object.
 
 A session has:
 

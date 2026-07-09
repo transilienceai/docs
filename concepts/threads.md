@@ -6,7 +6,7 @@ A **thread** is a conversation in which you ask the AI questions and get answers
 
 Threads are how you do follow-up after a run. "How many criticals did we find?" "Compare this scan to last week's." "Pull the IAM findings out of this report." All of that happens in a thread.
 
-"Thread" and "chat" mean the same conversation, looked at from different angles. **Thread** is the saved record (and the name on the sidebar). **Chat** is the live view where you type messages. Internally, threads are also called **conversations**.
+"Thread" and "chat" mean the same conversation, looked at from different angles. **Thread** is the saved record (and the name on the sidebar). **Chat** is the live view where you type messages.
 
 ## Where to find them
 
