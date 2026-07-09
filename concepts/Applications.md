@@ -1,6 +1,6 @@
 # Application Briefs
 
-A reference to every application in `projects/`: what each one does, how it works, and an architecture diagram. Briefs reflect the **latest committed logic** (`CLAUDE.md` + `project.json` per project).
+A reference to every application in `projects/`: what each one does, how it works, and an architecture diagram. Briefs reflect the **latest committed logic** (each project's committed configuration).
 
 > 30 project directories. 26 are fully specified applications, 1 is a generic framework (`custom-task`), 1 is a near-stub (`threat-radar-generation` has minimal docs but a full skill tree), and 1 is an empty placeholder (`Updated_evidence_review`).
 
@@ -8,7 +8,7 @@ A reference to every application in `projects/`: what each one does, how it work
 
 ## 1. Platform Architecture (shared by all apps)
 
-Every app is a **CLDPM-managed Claude Code project** that runs on the **MCS backend**. Apps are not standalone binaries — they are bundles of *agents*, *skills*, and *hooks* that the platform executes, surfacing results through a browser-rendered **dynamic dashboard** (React/TSX served from `outputs/`).
+Every app is a **platform-managed agent project** that runs on the **MCS backend**. Apps are not standalone binaries — they are bundles of *agents*, *skills*, and *hooks* that the platform executes, surfacing results through a browser-rendered **dynamic dashboard** (React/TSX served from `outputs/`).
 
 Three contracts are common to nearly every app:
 
@@ -16,36 +16,36 @@ Three contracts are common to nearly every app:
 |----------|----------|---------|
 | **Data load** | `fetch('data/…')` | Dashboard reads persisted JSON from the session volume |
 | **Execute** | `POST /project/execute` | Dashboard triggers the backend agent to persist results or run a phase |
-| **AI Bridge** | `POST /ai-bridge/invoke` \| `/stream` | Domain-agnostic proxy to Claude for intermediate LLM calls (mapping, scoring, OCR, narrative) |
+| **AI Bridge** | `POST /ai-bridge/invoke` \| `/stream` | Domain-agnostic proxy to the platform's AI engine for intermediate LLM calls (mapping, scoring, OCR, narrative) |
 
-AWS access is brokered by the **`session-start-credentials`** hook, which exchanges a Modal OIDC token for short-lived, customer-scoped credentials at session start. Most apps share three skills — **`dashboard-creation-skill`** (TSX + THEME), **`interactive-user-actions`** (forms/uploads), and **`ai-bridge`** — now unified as **`dynamic-dashboard`**.
+AWS access is brokered by the **`session-start-credentials`** hook, which exchanges a platform OIDC token for short-lived, customer-scoped credentials at session start. Most apps share three skills — **`dashboard-creation-skill`** (TSX + THEME), **`interactive-user-actions`** (forms/uploads), and **`ai-bridge`** — now unified as **`dynamic-dashboard`**.
 
 ```mermaid
 flowchart TD
-    subgraph Repo["CLDPM Monorepo"]
+    subgraph Repo["App Monorepo"]
         SH["shared/<br/>skills · hooks · services"]
-        PROJ["projects/&lt;app&gt;<br/>agents · skills · hooks · CLAUDE.md"]
+        PROJ["projects/&lt;app&gt;<br/>agents · skills · hooks · config"]
         SH -. symlinks .-> PROJ
     end
 
     PROJ -->|deployed to| MCS["MCS Backend Platform"]
 
     subgraph Runtime["App Runtime"]
-        AGENT["Claude Code Agent(s)<br/>orchestrate phases"]
+        AGENT["Transilience Agent(s)<br/>orchestrate phases"]
         DASH["Dynamic Dashboard (TSX)<br/>served from outputs/"]
     end
 
     MCS --> AGENT
     MCS --> DASH
 
-    AGENT -->|short-lived creds| CRED["session-start-credentials<br/>Modal OIDC"]
+    AGENT -->|short-lived creds| CRED["session-start-credentials<br/>platform OIDC"]
     CRED --> AWS["Customer AWS Account"]
     AGENT -->|writes| VOL["Session Volume<br/>outputs/{data,components,reports}"]
 
     DASH -->|fetch data/| VOL
     DASH -->|/project/execute| AGENT
-    DASH -->|/ai-bridge/invoke·stream| CLAUDE["Claude API (proxy)"]
-    AGENT -->|invoke| CLAUDE
+    DASH -->|/ai-bridge/invoke·stream| AIENG["AI engine (proxied)"]
+    AGENT -->|invoke| AIENG
 ```
 
 **Typical request lifecycle**
@@ -56,7 +56,7 @@ sequenceDiagram
     participant D as Dashboard (TSX)
     participant A as Backend Agent
     participant AWS as AWS APIs
-    participant C as Claude (AI Bridge)
+    participant C as AI Bridge
     participant V as Session Volume
 
     U->>D: Open app / select scope
@@ -139,22 +139,22 @@ flowchart TD
 
 *An auditor-facing workbench that automates the most laborious part of a PCI engagement: gathering evidence and reconciling it against 133 requirements. Scoping questions and asset uploads keep the assessment honest about what is genuinely in scope, while streamed AI verdicts and an evidence-grounded chat let reviewers interrogate every conclusion.*
 **Purpose** — Auditor-grade PCI-DSS v4.0.1 evidence collection, mapping, and gap assessment from AWS via a unified 5-phase dashboard workflow.
-**Inputs / data sources** — 20+ AWS services via Modal OIDC; an 11-question scoping questionnaire; optional asset inventory (CSV/XLSX) and auditor sample-set uploads.
-**How it works** — **Start** → **Collecting** (parallel AWS fetch with progress; scoping + asset uploads in side pane) → **Mapped** (category tallies, in-scope vs auto-N/A, naming + sample-coverage checks) → **Reviewing** (Claude Sonnet 4.6 streams NDJSON verdicts for in-scope parent requirements) → **Results** (Overview, All Requirements, Raw Evidence, Auditor Chat).
+**Inputs / data sources** — 20+ AWS services via platform OIDC; an 11-question scoping questionnaire; optional asset inventory (CSV/XLSX) and auditor sample-set uploads.
+**How it works** — **Start** → **Collecting** (parallel AWS fetch with progress; scoping + asset uploads in side pane) → **Mapped** (category tallies, in-scope vs auto-N/A, naming + sample-coverage checks) → **Reviewing** (the AI engine streams NDJSON verdicts for in-scope parent requirements) → **Results** (Overview, All Requirements, Raw Evidence, Auditor Chat).
 **Agents & skills** — Single `pci-dss-evidence-analyzer-agent`; `dashboard-creation` + `platform-api` deps; AI Bridge streaming.
 **Outputs** — 7-sheet Excel report, raw evidence JSON by category, snapshot history.
 **Frameworks** — PCI-DSS v4.0.1 (133 requirements, Defined Approach matrix).
 
 ```mermaid
 flowchart TD
-    Start["User: Start"] -->|fetch_aws_evidence| Fetch["AWS Fetcher (Modal OIDC)"]
+    Start["User: Start"] -->|fetch_aws_evidence| Fetch["AWS Fetcher (platform OIDC)"]
     Fetch --> Raw["data/raw/&lt;category&gt;.json"]
     Quest["Scoping Questionnaire (11Q)"] --> NA["Auto Not-Applicable"]
     Asset["Asset Inventory + Sample Set"] --> Parsed["Parsed Assets"]
     Raw --> Map["Mapping: tallies + coverage"]
     NA --> Map
     Parsed --> Map
-    Map -->|in-scope reqs| Rev["/ai-bridge/stream · Sonnet 4.6"]
+    Map -->|in-scope reqs| Rev["/ai-bridge/stream · AI engine"]
     Rev --> Verd["NDJSON Verdicts"]
     Verd --> Res["Results: 4 tabs"]
     Raw --> Res
@@ -178,7 +178,7 @@ flowchart TD
     B -->|boto3 via get_credentials| C["AWS (41 categories)"]
     C --> D["data/raw/ per-category JSON"]
     D -->|review_controls| E["Control Scorer (55 controls)"]
-    E -->|/ai-bridge/invoke| F["Claude Sonnet 4.6"]
+    E -->|/ai-bridge/invoke| F["AI engine"]
     F -->|verdict| E
     E --> G["task_results.json"]
     G --> H["SOC2ReadinessDashboard (5 tabs)"]
@@ -190,10 +190,10 @@ flowchart TD
 
 ### evidence-reviewer
 
-*A framework-agnostic triage tool for compliance teams buried in screenshots, PDFs, and configuration dumps. It ingests hundreds of artifacts in the browser, fuzzy-matches them to whatever control matrix you upload, and uses Claude to render a defensible per-control verdict.*
-**Purpose** — Ingest bulk compliance evidence (200–300+ files), map to control matrices, and use Claude to review each control against a chosen framework.
+*A framework-agnostic triage tool for compliance teams buried in screenshots, PDFs, and configuration dumps. It ingests hundreds of artifacts in the browser, fuzzy-matches them to whatever control matrix you upload, and uses the AI engine to render a defensible per-control verdict.*
+**Purpose** — Ingest bulk compliance evidence (200–300+ files), map to control matrices, and use the AI engine to review each control against a chosen framework.
 **Inputs / data sources** — Drag-and-drop evidence (PDF, image, text, Excel, Word); CSV/JSON control matrices; framework-agnostic field mapping.
-**How it works** — In-browser bulk ingestion (FileReader text + base64 images) → parse control matrix with flexible field mapping → keyword fuzzy-match evidence↔controls with manual override → per-control Claude review via `/ai-bridge/invoke` (analyst persona, structured JSON) → compliance dashboard with filtering and CSV/JSON export.
+**How it works** — In-browser bulk ingestion (FileReader text + base64 images) → parse control matrix with flexible field mapping → keyword fuzzy-match evidence↔controls with manual override → per-control AI review via `/ai-bridge/invoke` (analyst persona, structured JSON) → compliance dashboard with filtering and CSV/JSON export.
 **Agents & skills** — No agents; `dashboard-creation-skill`, `interactive-user-actions`, `ai-bridge`.
 **Outputs** — `EvidenceReviewDashboard.tsx`, `task_results.json` (verdicts + observations), gap analysis, CSV/JSON exports, markdown report.
 **Frameworks** — PCI-DSS v4.0.1, SOC 2 Type II, ISO 27001:2022, HIPAA, NIST 800-53 Rev 5, custom.
@@ -205,7 +205,7 @@ flowchart TD
     B --> E["Keyword Matching"]
     D --> E
     E -->|Phase 3| F["Manual Override UI"]
-    F -->|Phase 4| G["/ai-bridge/invoke (Claude)"]
+    F -->|Phase 4| G["/ai-bridge/invoke (AI engine)"]
     G --> H["Verdict + Observations + Severity"]
     H -->|Phase 5| I["Results Dashboard"]
     I --> J["CSV/JSON Export + Markdown Report"]
@@ -258,7 +258,7 @@ flowchart TD
 *A document factory and reviewer for information-security policies. It authors brand-aligned policy sets from a 473-point control library and, in reverse, audits existing policies for framework-coverage gaps.*
 **Purpose** — Framework-aligned policy creator and reviewer; generates branded PDF/DOCX policies and performs multi-framework gap analysis.
 **Inputs / data sources** — Framework selection (PCI-DSS v4.0.1, ISO 27001/27002:2022, SOC 2 TSC 2017, HIPAA); org metadata + logo; for review mode, an existing policy PDF/DOCX.
-**How it works** — Choose Create or Review → select framework(s) + enter org details (logo → co-brand + color extraction) → **Create**: pick style + target policies from a 473-control-point index, Claude generates branded PDF → **Review**: parse uploaded policy, cross-map to controls, score missing controls by severity → output PDF (create) or XLSX + PDF (review).
+**How it works** — Choose Create or Review → select framework(s) + enter org details (logo → co-brand + color extraction) → **Create**: pick style + target policies from a 473-control-point index, the AI engine generates branded PDF → **Review**: parse uploaded policy, cross-map to controls, score missing controls by severity → output PDF (create) or XLSX + PDF (review).
 **Agents & skills** — No agents; `policy-engine` skill via `dynamic-dashboard`; AI Bridge invoke/stream.
 **Outputs** — Branded 7-section PDF policies; gap-analysis XLSX + PDF summary.
 **Frameworks** — PCI-DSS v4.0.1 (203 sub-reqs), ISO 27001/27002:2022 (93 controls), SOC 2 TSC 2017 (90 criteria), HIPAA (49 specs).
@@ -503,7 +503,7 @@ flowchart TD
 
 *An autonomous offensive-security platform that orchestrates a fleet of specialized attack agents the way a red-team lead directs operators. Reconnaissance, exploitation, and evidence validation run in parallel, and every finding is adversarially re-checked before it reaches the report.*
 **Purpose** — Multi-agent penetration-testing framework orchestrating parallel recon, vulnerability testing, and evidence validation across 50+ attack types and 11 domains.
-**Inputs / data sources** — User-defined target scope + explicit authorization; optional Shodan/DNS intel; Modal OIDC for AWS.
+**Inputs / data sources** — User-defined target scope + explicit authorization; optional Shodan/DNS intel; platform OIDC for AWS.
 **How it works** — **Initialization** (coordinator parses scope, loads 20+ skills) → **Reconnaissance** (parallel discovery agents) → **Planning** (batch attack vectors by surface) → **Vulnerability Testing** (stateless executor agents write finding-NNN artifacts) → **Aggregation & Validation** (validator agents run 5 checks: CVSS consistency, evidence, PoC, claims-vs-raw, log corroboration) → **Reporting** (dashboard + branded PDF + remediation roadmap).
 **Agents & skills** — Coordinator (inline), Executor (background, stateless), Validator (background, per-finding); 25+ skills (injection, client/server-side, auth, api-security, cloud-containers, ai-threat-testing, cve-poc-generator, osint, dfir, …).
 **Outputs** — Validated findings (CVSS/CWE/OWASP/MITRE), `PentestReportDashboard.tsx`, `pentest_results.json`, Transilience PDF, NDJSON logs.
@@ -818,8 +818,8 @@ flowchart TD
 ```
 
 ### Updated_evidence_review
-**Status** — Empty placeholder. Directory contains only `.DS_Store` and an empty `outputs/` — no `CLAUDE.md`, `project.json`, agents, skills, or source. Likely superseded by [evidence-reviewer](#evidence-reviewer) / [pci-dss-evidence-analyzer](#pci-dss-evidence-analyzer).
+**Status** — Empty placeholder. Directory contains only `.DS_Store` and an empty `outputs/` — no project config, agents, skills, or source. Likely superseded by [evidence-reviewer](#evidence-reviewer) / [pci-dss-evidence-analyzer](#pci-dss-evidence-analyzer).
 
 ---
 
-*Generated from `projects/*/CLAUDE.md` and `project.json`. Diagrams are Mermaid — render in any Mermaid-aware viewer (GitHub, VS Code, Obsidian).*
+*Generated from each project's committed configuration. Diagrams are Mermaid — render in any Mermaid-aware viewer (GitHub, VS Code, Obsidian).*
