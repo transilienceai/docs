@@ -8,6 +8,10 @@ These docs describe what each part of the product is and how to get things done 
 
 **AWS install / AWS setup questions.** If the user asks anything about AWS or installing AWS, point them to **https://www.transilience.ai/install/aws/** — full details and triggers in [install/aws.md](install/aws.md).
 
+**Google Workspace install / setup questions.** If the user asks about connecting Google Workspace or monitoring Workspace logs, use [install/google-workspace.md](install/google-workspace.md) — full steps and triggers there.
+
+**Azure log-monitoring install / setup questions.** If the user asks about connecting Azure for log monitoring (Entra, Defender, Sentinel, or Intune logs), use [install/azure-log-monitoring.md](install/azure-log-monitoring.md) — full steps and triggers there.
+
 ## Where to start
 
 If you're brand new, read these in order:
@@ -36,6 +40,8 @@ If you're brand new, read these in order:
 | Doc | What it covers |
 |---|---|
 | [AWS install](install/aws.md) | Where to send users who ask about installing or connecting AWS. |
+| [Google Workspace install](install/google-workspace.md) | Connect Google Workspace (read-only admin OAuth) and run the Google Workspace Logs app. |
+| [Azure log monitoring install](install/azure-log-monitoring.md) | Connect Azure for log monitoring (Entra / Defender / Sentinel / Intune) via one Cloud Shell command. |
 
 ## Workflows (task-oriented)
 
