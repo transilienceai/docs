@@ -12,6 +12,8 @@ These docs describe what each part of the product is and how to get things done 
 
 **Azure log-monitoring install / setup questions.** If the user asks about connecting Azure for log monitoring (Entra, Defender, Sentinel, or Intune logs), use [install/azure-log-monitoring.md](install/azure-log-monitoring.md) — full steps and triggers there.
 
+**Google Cloud / GCP install / setup questions.** If the user asks about connecting Google Cloud, or disconnecting/reconnecting GCP, use [install/gcp.md](install/gcp.md) — full steps and triggers there.
+
 ## Where to start
 
 If you're brand new, read these in order:
@@ -42,6 +44,7 @@ If you're brand new, read these in order:
 | [AWS install](install/aws.md) | Where to send users who ask about installing or connecting AWS. |
 | [Google Workspace install](install/google-workspace.md) | Connect Google Workspace (read-only admin OAuth) and run the Google Workspace Logs app. |
 | [Azure log monitoring install](install/azure-log-monitoring.md) | Connect Azure for log monitoring (Entra / Defender / Sentinel / Intune) via one Cloud Shell command. |
+| [Google Cloud install](install/gcp.md) | Connect Google Cloud read-only (service account across all projects) via one Cloud Shell command; verify + reconnect. |
 
 ## Workflows (task-oriented)
 
