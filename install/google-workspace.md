@@ -60,10 +60,41 @@ Only Google's read-only Admin SDK report scopes (`admin.reports.audit.readonly` 
 change, send, or delete anything. The Admin SDK API must be enabled on the platform's OAuth
 project (a one-time, platform-side step) for the reports to return data.
 
+## Verify exactly what access you granted
+
+Because Google Workspace connects by **OAuth admin-consent** (not a Marketplace install, a
+service account, or domain-wide delegation), there's nothing installed in your Workspace — and
+the grant is recorded on the **account of the admin who connected**, not in a domain-wide app
+list. Any admin can confirm the exact access at any time:
+
+1. Sign in to **[myaccount.google.com](https://myaccount.google.com)** as the admin who connected
+   (the one shown on the Integrations card).
+2. Go to **Security** → **Your connections to third-party apps & services** (also called
+   **Linked apps**), or open **[myaccount.google.com/connections](https://myaccount.google.com/connections)**.
+3. Open **Transilience Managed Compliance** (search for "Transilience" if needed). Under
+   *"…has some access to your Google Account"* you'll see **exactly** what was granted:
+
+   - **View usage reports for your Google Workspace domain** (`admin.reports.usage.readonly`)
+   - **View audit reports for your Google Workspace domain** (`admin.reports.audit.readonly`)
+   - plus basic profile/email used for sign-in
+
+   Nothing else — **no Gmail, no Drive, no file or mailbox content**, and nothing that can change,
+   send, or delete anything.
+
+![Google Account → Linked apps → Transilience Managed Compliance, showing the two read-only Reports scopes granted and a "Delete all" button](../images/gws-access-granted.jpg)
+
+> **Not in the Admin console app list.** You won't find this under **Admin console → Security →
+> Access and data control → API controls → App access control** (its "accessed apps" /
+> "configured apps" lists). That view only tracks apps that request **user-data** scopes
+> (Gmail, Drive, Sign-in). Transilience requests only **admin-level Reports** scopes, so Google
+> records the grant on the consenting admin's account (step 3 above) — this is expected and does
+> **not** mean the connection is missing.
+
 ## Removing access
 
 Click **Disconnect** on the Integrations page anytime — Transilience revokes the token and deletes
-the stored credential. You can also revoke it from your Google Account's security settings.
+the stored credential. You can also revoke it from the admin's Google Account: on the **Linked
+apps** page above, open **Transilience Managed Compliance** → **Delete all**.
 
 ## Related
 
