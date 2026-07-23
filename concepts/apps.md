@@ -4,7 +4,7 @@
 
 An **app** is a reusable security or compliance workflow you can run on demand. Each app does one job — for example, scanning a cloud account for misconfigurations, running a CIS benchmark, generating a tabletop exercise, or analyzing access reviews. The catalog of apps is what you see when you click **Apps** in the sidebar.
 
-"App" and "project" mean the same thing. You'll see "App" everywhere in the product UI; "project" appears in some internal labels and URLs (like `/apps/detail/[appId]`). Treat them as synonyms.
+You'll see **App** everywhere in the product UI. In the URL bar an app detail page appears as `/apps/detail/{appId}`.
 
 ## Where to find them
 
@@ -25,7 +25,6 @@ A sidebar on the right lists your most recent runs across all apps, with the lat
 Clicking an app card opens its detail page at `/apps/detail/{appId}`. The detail page shows:
 
 - The full description of what the app does.
-- The agents and skills the app uses internally (mostly informational).
 - A button to launch the app.
 
 When you launch, the app starts a new [session](sessions.md) and you're taken to the [live activity](live-activity.md) view while it runs.
@@ -44,8 +43,6 @@ The apps in the catalog come from a curated library that the platform maintains.
 ## Common questions
 
 **"Where do I find the apps?"** — Click **Apps** in the left sidebar.
-
-**"What's the difference between an app and a project?"** — Nothing, they're the same thing. "App" is the user-facing name.
 
 **"Where do I see results from an app?"** — Once a run finishes, the [outputs](outputs.md) appear in the [run history](run-history.md). While it's still running, you see them stream into the [live activity](live-activity.md) view.
 

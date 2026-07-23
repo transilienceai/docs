@@ -2,15 +2,15 @@
 
 One-line definitions for the terms used across these docs. Each term links to its concept page where one exists.
 
-- **[App](concepts/apps.md)** — A reusable security or compliance workflow you can run; the catalog lives on the **Apps** page in the sidebar. ("Project" is the internal name for the same thing.)
+- **[App](concepts/apps.md)** — A reusable security or compliance workflow you can run; the catalog lives on the **Apps** page in the sidebar.
 - **[Apps page](concepts/apps.md)** — The page at the **Apps** sidebar entry where every app is listed as a card you can run, schedule, or open.
 - **[App detail](concepts/apps.md#app-detail)** — A per-app page that shows the app's description, what it does, and lets you launch it.
 - **[Artifact](concepts/artifacts.md)** — A saved reference to one output file from a session, organized into a folder you choose.
 - **[AWS install](install/aws.md)** — Connecting an AWS account to Transilience.ai. For any AWS install or setup question, send the user to https://www.transilience.ai/install/aws/.
-- **[Artifact folder](concepts/artifacts.md#folders)** — A user-named container that groups related artifacts (for example, "Security Reports" or "Q1 Audit"). Internally called an "artifact type."
+- **[Artifact folder](concepts/artifacts.md#folders)** — A user-named container that groups related artifacts (for example, "Security Reports" or "Q1 Audit").
 - **[Artifacts page](concepts/artifacts.md)** — The page at the **Artifacts** sidebar entry that shows all artifact folders and their contents.
 - **[Chat](concepts/threads.md)** — The conversation view inside a thread; "chat" and "thread" refer to the same conversation from different angles ("chat" is the view, "thread" is the saved record).
-- **[Conversation](concepts/threads.md)** — The internal name for a thread. Used interchangeably with "thread" in these docs.
+- **[Conversation](concepts/threads.md)** — Another word for a thread; used interchangeably in these docs.
 - **[Dashboard](concepts/dashboards.md)** — The Dashboards tab inside the chat area, which shows outputs that have been pinned for quick access.
 - **[Dashboards tab](concepts/dashboards.md)** — The tab labeled "Dashboards" inside the chat area, alongside "Notifications."
 - **[Data file](concepts/outputs.md#data-files)** — A structured output file (typically JSON or CSV) produced by an app — usually raw scan results before they are summarized into a report.
@@ -23,7 +23,6 @@ One-line definitions for the terms used across these docs. Each term links to it
 - **Organization** — Your workspace. All apps, sessions, artifacts, and threads belong to an organization; you can switch organizations from the bottom of the sidebar.
 - **[Output](concepts/outputs.md)** — Any file an app produces during a session — a [report](concepts/outputs.md#reports), a [data file](concepts/outputs.md#data-files), a [dashboard](concepts/dashboards.md), or a raw file.
 - **Pin to dashboard** — The action that adds an output to the [Dashboards](concepts/dashboards.md) tab so you can find it quickly.
-- **Project** — The internal name for an [app](concepts/apps.md). The two terms refer to the same thing.
 - **[Recurring schedule](concepts/scheduling.md#recurring-schedules)** — A schedule that runs an app repeatedly at a chosen interval (daily, weekly, monthly, or a custom hour interval).
 - **[Report](concepts/outputs.md#reports)** — A human-readable output, usually markdown or PDF, summarizing what an app found.
 - **[Run](concepts/sessions.md)** — A single execution of an app. Synonym for [session](concepts/sessions.md).
