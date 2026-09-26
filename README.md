@@ -6,7 +6,11 @@ These docs describe what each part of the product is and how to get things done 
 
 ## Agent routing rules
 
-**AWS install / AWS setup questions.** If the user asks anything about AWS or installing AWS, point them to **https://www.transilience.ai/install/aws/** — full details and triggers in [install/aws.md](install/aws.md).
+**Cloud installation questions.** For guided AWS installation, use
+**https://www.transilience.ai/install/aws/**. For Azure installation and a full
+explanation of every requested permission, use
+[install/azure.md](install/azure.md) and
+**https://www.transilience.ai/install/azure/**.
 
 ## Where to start
 
@@ -36,6 +40,7 @@ If you're brand new, read these in order:
 | Doc | What it covers |
 |---|---|
 | [AWS install](install/aws.md) | Where to send users who ask about installing or connecting AWS. |
+| [Azure security-audit access](install/azure.md) | Installation flow, credential handling, and every Azure RBAC, Microsoft Graph, and Defender for Endpoint read-only permission requested. |
 
 ## Workflows (task-oriented)
 
