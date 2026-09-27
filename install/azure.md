@@ -24,8 +24,10 @@ credential with the correct customer organization.
 5. Creates a one-year client secret for this dedicated app and sends the tenant
    ID, client ID, secret, selected subscription IDs, and grant results directly
    to the customer-specific Transilience HTTPS callback.
-6. Removes the local credential file after a successful callback and writes a
-   non-secret `transilience-azure-install-manifest.json` summary in Cloud Shell.
+6. Writes an owner-readable `transilience-azure-credentials.json` handoff file
+   and a non-secret `transilience-azure-install-manifest.json` summary in Cloud
+   Shell before attempting the callback. Both remain available after success or
+   failure so the customer can use the same approved secure-handoff procedure.
 
 The app acts as itself; it does not impersonate the administrator who performs
 the installation. No delegated permission and no Microsoft Graph
@@ -163,8 +165,11 @@ documentation, or the non-secret installation manifest.
 5. If the script reports that admin consent is incomplete, have an authorized
    Entra administrator grant consent under **App registrations → Transilience
    Managed Compliance → API permissions**, then run the same command again.
-6. Save the final non-secret authorization summary. A `partial` result is safe
-   to retain and lists exactly which grants need repair.
+6. Run `ls -lh ~/transilience-azure-*.json`. Transfer
+   `transilience-azure-credentials.json` only through the secure location
+   provided by Transilience; it must not be sent by email, chat, or a support
+   ticket. The install manifest is non-secret and lists exactly which grants
+   succeeded, failed, or need repair.
 
 The default command includes every enabled subscription visible to the
 installer. Use `--subscriptions ID1,ID2` or
