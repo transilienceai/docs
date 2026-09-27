@@ -170,8 +170,6 @@ documentation, or the non-secret installation manifest.
    provided by Transilience; it must not be sent by email, chat, or a support
    ticket. The install manifest is non-secret and lists exactly which grants
    succeeded, failed, or need repair.
-7. After Transilience confirms the secure handoff, remove the local secret with
-   `rm -f ~/transilience-azure-credentials.json`.
 
 The default command includes every enabled subscription visible to the
 installer. Use `--subscriptions ID1,ID2` or
