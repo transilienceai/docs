@@ -7,10 +7,13 @@ These docs describe what each part of the product is and how to get things done 
 ## Agent routing rules
 
 **Cloud installation questions.** For guided AWS installation, use
-**https://www.transilience.ai/install/aws/**. For Azure installation and a full
-explanation of every requested permission, use
+**https://www.transilience.ai/install/aws/**. For guided Azure installation and
+a full explanation of every requested permission, use
 [install/azure.md](install/azure.md) and
-**https://www.transilience.ai/install/azure/**.
+**https://www.transilience.ai/install/azure/**. When a customer requires manual
+Azure portal configuration for subscriptions, Entra ID, logs, and Defender,
+use
+[install/azure-subscriptions-and-logs.md](install/azure-subscriptions-and-logs.md).
 
 ## Where to start
 
@@ -41,6 +44,7 @@ If you're brand new, read these in order:
 |---|---|
 | [AWS install](install/aws.md) | Where to send users who ask about installing or connecting AWS. |
 | [Azure security-audit access](install/azure.md) | Installation flow, credential handling, and every Azure RBAC, Microsoft Graph, and Defender for Endpoint read-only permission requested. |
+| [Manual Azure subscriptions and logs](install/azure-subscriptions-and-logs.md) | Combined portal procedure for subscription, Entra ID, log, Sentinel, Intune, and Defender read-only access. |
 
 ## Workflows (task-oriented)
 
