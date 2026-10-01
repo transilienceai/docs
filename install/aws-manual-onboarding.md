@@ -3,7 +3,8 @@
 This guide describes the manual AWS console procedure for connecting one or
 more AWS accounts to **Transilience Managed Compliance** with OpenID Connect
 (OIDC). It is the portal-based alternative to the preferred
-[guided AWS installer](https://www.transilience.ai/install/aws/).
+[guided AWS installer](https://www.transilience.ai/install/aws/) and
+[AWS CloudFormation installation](aws-cloudformation.md).
 
 The connection uses short-lived, workload-identity credentials issued through
 Modal's OIDC provider. Do not create an IAM user, access key, or long-lived AWS
@@ -293,6 +294,7 @@ To revoke Transilience access:
 
 ## Source and reference material
 
+- [AWS CloudFormation installation](aws-cloudformation.md)
 - [Manual AWS account onboarding](https://transilience.freshdesk.com/support/solutions/articles/154000227039-onboard-aws-account-for-transilience-managed-compliance)
 - [Guided AWS installer](https://www.transilience.ai/install/aws/)
 - [Modal OIDC integration](https://modal.com/docs/guide/oidc-integration)

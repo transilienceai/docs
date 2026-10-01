@@ -7,8 +7,9 @@ These docs describe what each part of the product is and how to get things done 
 ## Agent routing rules
 
 **Cloud installation questions.** For guided AWS installation, use
-**https://www.transilience.ai/install/aws/**. When a customer requires manual
-AWS console configuration with Modal OIDC and IAM roles, use
+**https://www.transilience.ai/install/aws/** and
+[install/aws-cloudformation.md](install/aws-cloudformation.md). When a customer
+requires manual AWS console configuration with Modal OIDC and IAM roles, use
 [install/aws-manual-onboarding.md](install/aws-manual-onboarding.md). For Azure
 installation and a full explanation of every requested permission, use
 [install/azure.md](install/azure.md) and
@@ -45,6 +46,7 @@ If you're brand new, read these in order:
 | Doc | What it covers |
 |---|---|
 | [AWS install](install/aws.md) | Where to send users who ask about installing or connecting AWS. |
+| [AWS CloudFormation installation](install/aws-cloudformation.md) | Preferred Quick Create stack procedure, permissions, validation, troubleshooting, and revocation. |
 | [Manual AWS onboarding](install/aws-manual-onboarding.md) | Portal-based Modal OIDC, IAM role, and optional multi-account setup when the guided installer cannot be used. |
 | [Azure security-audit access](install/azure.md) | Installation flow, credential handling, and every Azure RBAC, Microsoft Graph, and Defender for Endpoint read-only permission requested. |
 | [Manual Azure subscriptions and logs](install/azure-subscriptions-and-logs.md) | Combined portal procedure for subscription, Entra ID, log, Sentinel, Intune, and Defender read-only access. |
