@@ -51,19 +51,35 @@ Administrator**, together with **Owner**, **Role Based Access Control
 Administrator**, or **User Access Administrator** at the selected Azure scopes.
 A customer may divide these duties between two administrators.
 
+> **Screenshot note:** The screenshots below are navigation examples from a
+> sample tenant. Azure portal labels and layouts can change. Follow the written
+> steps and permission tables in this guide, use the customer's own tenant and
+> subscription values, and do not copy the example application names or IDs.
+
 ## 1. Create the dedicated application
 
 1. In the Azure portal, open **Microsoft Entra ID → App registrations**.
+
+   ![Open App registrations in Microsoft Entra ID](../assets/azure-manual-onboarding/01-app-registrations.png)
+
 2. Select **New registration**.
 3. Enter `Transilience Managed Compliance` as the application name.
 4. Select **Accounts in this organizational directory only**.
 5. Leave the redirect URI empty and complete the registration.
+
+   ![Register a single-tenant application and leave the redirect URI empty](../assets/azure-manual-onboarding/02-register-application.png)
+
 6. On the application's **Overview** page, record the:
    - Application (client) ID; and
    - Directory (tenant) ID.
+
+   ![Find the application and tenant IDs and open certificates and secrets](../assets/azure-manual-onboarding/03-certificates-secrets.png)
+
 7. Open **Certificates & secrets → Client secrets → New client secret**.
 8. Use the customer-approved expiry, up to one year, and create the secret.
 9. Copy the secret **value** immediately. It is displayed only once.
+
+   ![Create a client secret and copy its value immediately](../assets/azure-manual-onboarding/04-create-client-secret.png)
 
 Do not send the secret value by email, chat, or support ticket. Store it only in
 the approved secure handoff location described in [Secure handoff](#7-secure-handoff).
@@ -101,10 +117,26 @@ assessment:
 For each applicable subscription or management group:
 
 1. Open the scope in the Azure portal.
+
+   ![Open Access control IAM on the selected subscription or management group](../assets/azure-manual-onboarding/05-subscription-access-control.png)
+
 2. Select **Access control (IAM) → Add → Add role assignment**.
+
+   ![Start a new Azure role assignment](../assets/azure-manual-onboarding/07-add-role-assignment.png)
+
 3. Select the required role.
+
+   The following screenshot uses **Reader** as the example. Search for and
+   assign each role listed in the tables above; do not infer additional roles
+   from the surrounding search results.
+
+   ![Select the Azure Reader role](../assets/azure-manual-onboarding/10-reader-role.png)
+
 4. Select **User, group, or service principal** as the member type.
 5. Find and select **Transilience Managed Compliance**.
+
+   ![Select the Transilience application as the role-assignment member](../assets/azure-manual-onboarding/09-select-members.png)
+
 6. Review and assign the role.
 7. Repeat until every required role is present at every approved scope.
 
@@ -112,16 +144,38 @@ If Log Analytics or Sentinel access does not inherit from a higher scope,
 assign **Log Analytics Reader** and **Microsoft Sentinel Reader** directly on
 each approved workspace.
 
+![Select the Microsoft Sentinel Reader role](../assets/azure-manual-onboarding/12-sentinel-reader.png)
+
+![Select the Log Analytics Reader role](../assets/azure-manual-onboarding/13-log-analytics-reader.png)
+
 > **Do not assign Reader and Data Access.** The older subscription-onboarding
 > article included that role, but the current least-privilege full-evidence
 > profile intentionally excludes it, storage `listKeys`, Key Vault secret-value
 > roles, and all write-capable Azure roles.
+
+### Record the subscription identifier
+
+On the subscription's **Overview** page, copy its **Subscription ID** for the
+secure handoff. Record the **Directory (tenant) ID** from the application
+Overview page shown in [Create the dedicated application](#1-create-the-dedicated-application).
+Confirm both identifiers belong to the intended customer before continuing.
+
+![Find the subscription ID on the subscription Overview page](../assets/azure-manual-onboarding/15-subscription-id.png)
 
 ## 3. Add Microsoft Graph application permissions
 
 Open **Microsoft Entra ID → App registrations → Transilience Managed
 Compliance → API permissions → Add a permission → Microsoft Graph →
 Application permissions**.
+
+![Find and open the registered Transilience application](../assets/azure-manual-onboarding/18-registered-application.png)
+
+![Open API permissions, add a permission, and select Microsoft Graph](../assets/azure-manual-onboarding/19-api-permissions.png)
+
+Select **Application permissions**, not **Delegated permissions**, and search
+for each exact permission name. A new app registration may display the default
+delegated `User.Read` permission; remove it because this integration does not
+use delegated access.
 
 Add every permission in the following table. These are tenant-wide,
 app-only, read-only permissions.
@@ -176,6 +230,17 @@ Some permissions return evidence only when the corresponding Microsoft product
 is licensed and configured. Granting a permission does not create data in a
 product that the customer does not use.
 
+The following examples show the selection pattern for representative Graph
+permissions. Repeat the same process for every permission in the table above.
+
+![Select AuditLog.Read.All under Microsoft Graph application permissions](../assets/azure-manual-onboarding/20-auditlog-read-all.png)
+
+![Select Policy.Read.All under Microsoft Graph application permissions](../assets/azure-manual-onboarding/21-policy-read-all.png)
+
+![Select User.Read.All under Microsoft Graph application permissions](../assets/azure-manual-onboarding/22-user-read-all.png)
+
+![Select Directory.Read.All under Microsoft Graph application permissions](../assets/azure-manual-onboarding/23-directory-read-all.png)
+
 ## 4. Add Microsoft Defender for Endpoint application permissions
 
 From **API permissions → Add a permission**, select the Microsoft Defender for
@@ -200,7 +265,15 @@ Microsoft Defender for Endpoint is licensed and configured in the tenant.
    permission list with the customer.
 3. Select **Grant admin consent for _tenant name_**.
 4. Confirm the action.
+
+   ![Confirm tenant-wide admin consent for the requested application permissions](../assets/azure-manual-onboarding/25-grant-admin-consent.png)
+
 5. Verify that every required permission shows **Granted for _tenant name_**.
+
+The screenshot captures the confirmation step, so some rows still show **Not
+granted**. After confirming and refreshing the page, every permission required
+by this guide must show **Granted**, and the permission type must be
+**Application**. Remove any unneeded delegated permission before validation.
 
 If a permission remains ungranted, have an authorized Entra administrator
 complete consent before testing the connection.
