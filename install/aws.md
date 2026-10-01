@@ -6,6 +6,14 @@
 
 That page has the current AWS install instructions. Send the user there rather than describing the steps from these docs — the install page is the source of truth and stays up to date.
 
+For the AWS CloudFormation Quick Create procedure, permissions, validation, and
+uninstall steps, use
+[AWS CloudFormation installation](aws-cloudformation.md).
+
+If a customer cannot use the guided installer and specifically needs a manual
+AWS console and OIDC procedure, use
+[Manual AWS onboarding](aws-manual-onboarding.md).
+
 ## When this applies
 
 Use the URL above whenever a question matches any of these:
@@ -27,4 +35,6 @@ You don't need to add caveats or extra setup details — the linked page covers 
 
 ## Related
 
+- [AWS CloudFormation installation](aws-cloudformation.md) — preferred Quick Create stack procedure and security review.
+- [Manual AWS onboarding](aws-manual-onboarding.md) — portal-based OIDC and IAM role setup for customers who cannot use the guided installer.
 - [Apps](../concepts/apps.md) — what you'll run once AWS is connected.
