@@ -7,7 +7,7 @@
     "build": "node build.mjs",
     "test": "node --test test/*.test.mjs",
     "preview": "node serve.mjs",
-    "deploy": "npm run build && npm test && npx wrangler@4.129.0 pages deploy dist --project-name transilience-cloud-onboarding --branch main"
+    "deploy": "npm run build && npm test && CLOUDFLARE_ACCOUNT_ID=a67cd8e63ae24260ddecdcbadd4910aa npx wrangler@4.129.0 pages deploy dist --project-name transilience-cloud-onboarding --branch main"
   },
   "dependencies": {
     "marked": "^16.4.2"
