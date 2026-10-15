@@ -22,11 +22,13 @@ async function updateSearch(){
  results.replaceChildren();
  if(!ranked.length){results.append(node('p','No matching guides. Try “consent”, “role”, or “CloudFormation”.','empty'));return;}
  if(!terms.length)results.append(node('p','Popular starting points','small muted'));
- for(const item of ranked){const a=node('a');a.href=item.url;a.setAttribute('role','listitem');a.append(node('strong',item.title),node('span',item.description));results.append(a);}
+ for(const item of ranked){const row=node('div');row.setAttribute('role','listitem');const a=node('a');a.href=item.url;a.append(node('strong',item.title),node('span',item.description));row.append(a);results.append(row);}
 }
 $('#open-search')?.addEventListener('click',showSearch);
 $('#close-search')?.addEventListener('click',()=>dialog.close());
 search?.addEventListener('input',updateSearch);
+search?.addEventListener('keydown',e=>{if(e.key==='ArrowDown'){$('#search-results a')?.focus();e.preventDefault();}});
+results?.addEventListener('keydown',e=>{const links=$$('#search-results a'),i=links.indexOf(document.activeElement);if(e.key==='ArrowDown'){links[Math.min(i+1,links.length-1)]?.focus();e.preventDefault();}if(e.key==='ArrowUp'){if(i<=0)search.focus();else links[i-1].focus();e.preventDefault();}});
 document.addEventListener('keydown',e=>{const editing=/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName);if((e.key.toLowerCase()==='k'&&(e.metaKey||e.ctrlKey))||(e.key==='/'&&!editing)){e.preventDefault();showSearch();}});
 dialog?.addEventListener('click',e=>{if(e.target===dialog){const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dialog.close();}});
 
