@@ -1,0 +1,30 @@
+name: Cloud onboarding portal
+on:
+  pull_request:
+    paths: ['site/**', 'install/**', '.github/workflows/onboarding-portal.yml']
+  push:
+    branches: [main]
+    paths: ['site/**', 'install/**', '.github/workflows/onboarding-portal.yml']
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: site
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - run: npm ci --ignore-scripts
+      - run: npm run build
+      - run: npm test
+      - run: node --check public/app.js
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cloud-onboarding-pages
+          path: site/dist

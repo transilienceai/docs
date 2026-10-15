@@ -1,0 +1,14 @@
+/*
+  Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self'; font-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests
+  Referrer-Policy: no-referrer
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
+  Strict-Transport-Security: max-age=31536000
+  Cache-Control: public, max-age=300, must-revalidate
+/downloads/*.sh
+  Content-Disposition: attachment
+  Content-Type: text/plain; charset=utf-8
+/downloads/*.yaml
+  Content-Disposition: attachment
+  Content-Type: text/plain; charset=utf-8

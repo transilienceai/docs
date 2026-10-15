@@ -1,0 +1,4 @@
+name = "transilience-cloud-onboarding"
+account_id = "a67cd8e63ae24260ddecdcbadd4910aa"
+pages_build_output_dir = "./dist"
+compatibility_date = "2026-10-14"
