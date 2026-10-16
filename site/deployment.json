@@ -31,6 +31,9 @@
     "localOnlyQA": "test/responsive-preview.html is served only by the local preview server and is excluded from dist."
   },
   "maintenance": [
+    "The simple setup pages follow Permissions → Install → Verify; source install guides and installer snapshots remain unchanged.",
+    "Audit, Logs and Both are instruction buckets, not backend permission overrides. Automated logs-only limitations must remain visible.",
+    "Publish only the reviewed screenshot allowlist in guides.mjs; review screenshots.json before changing it.",
     "Review changes to the source install guides and update sourceCommit in content.mjs when adopting a newer reviewed baseline.",
     "Refresh public production installer snapshots only after reviewing their trust model, permission manifest, and callback behavior.",
     "Run all checks and desktop/mobile browser QA before publishing.",

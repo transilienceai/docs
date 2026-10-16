@@ -7,6 +7,28 @@ menu?.addEventListener('click',()=>{const open=menu.getAttribute('aria-expanded'
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){menu?.setAttribute('aria-expanded','false');$('#sidebar')?.classList.remove('is-open');}});
 document.addEventListener('click',e=>{if(!e.target.closest('#sidebar')&&!e.target.closest('#menu-toggle')){menu?.setAttribute('aria-expanded','false');$('#sidebar')?.classList.remove('is-open');}});
 
+// The bucket is a local documentation selection, never an access grant.
+const setupGuide=$('[data-setup-guide]');
+if(setupGuide){
+ const allowed=['audit','logs','both'];
+ function showBucket(value,updateUrl=false){
+  const bucket=allowed.includes(value)?value:'audit';
+  $$('input[name="permissions"]').forEach(input=>{input.checked=input.value===bucket;});
+  $$('[data-permission-panel]').forEach(panel=>{panel.hidden=panel.dataset.permissionPanel!==bucket;});
+  $$('[data-verify-bucket]').forEach(panel=>{panel.hidden=panel.dataset.verifyBucket!==bucket;});
+  $$('[data-log-scope]').forEach(panel=>{panel.hidden=bucket==='audit';});
+  $$('[data-selected-bucket]').forEach(label=>{label.textContent={audit:'Audit',logs:'Logs',both:'Audit + Logs'}[bucket];});
+  // Switching setup method within a cloud keeps the instruction selection.
+  const prefix=setupGuide.dataset.cloud==='AWS'?'/aws/':'/azure/';
+  $$('#sidebar a').forEach(link=>{const url=new URL(link.href);if(url.pathname.startsWith(prefix)){url.searchParams.set('permissions',bucket);link.href=url.pathname+url.search+url.hash;}});
+  // Deep links and Back retain the selected bucket without storing any identity.
+  if(updateUrl){const url=new URL(location.href);url.searchParams.set('permissions',bucket);history.replaceState(null,'',url);}
+ }
+ showBucket(new URL(location.href).searchParams.get('permissions'));
+ $$('input[name="permissions"]').forEach(input=>input.addEventListener('change',()=>showBucket(input.value,true)));
+ window.addEventListener('popstate',()=>showBucket(new URL(location.href).searchParams.get('permissions')));
+}
+
 // Search downloads only the public guide index. Input and queries never leave the page.
 let indexPromise;
 const dialog=$('#search-dialog'), search=$('#site-search'), results=$('#search-results');

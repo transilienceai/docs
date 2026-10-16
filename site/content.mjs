@@ -3,10 +3,10 @@ export const reviewed = '14 October 2026';
 export const origin = 'https://cloudonboarding.transilience.dev';
 export const repo = 'https://github.com/transilienceai/docs';
 export const groups = [
-  ['Start here', [['/', 'Overview'], ['/plan/', 'Build your onboarding plan']]],
-  ['Amazon Web Services', [['/aws/', 'Choose an AWS path'], ['/aws/cloudformation/', 'CloudFormation'], ['/aws/manual/', 'Manual setup'], ['/aws/organization/', 'Multiple AWS accounts'], ['/aws/user-access/', 'Invite an engineer']]],
-  ['Microsoft Azure', [['/azure/', 'Choose an Azure path'], ['/azure/cloud-shell/', 'Cloud Shell installer'], ['/azure/manual/', 'Manual setup']]],
-  ['Review & finish', [['/permissions/', 'Permission explorer'], ['/verify/', 'Verify the connection'], ['/troubleshooting/', 'Troubleshooting'], ['/security/', 'Security & revocation'], ['/downloads/', 'Templates & scripts']]]
+  ['Get started', [['/', 'Connect your cloud']]],
+  ['Cloud · AWS', [['/aws/cloudformation/', 'CloudFormation'], ['/aws/manual/', 'Manual setup'], ['/aws/organization/', 'Multiple accounts'], ['/aws/user-access/', 'Engineer access']]],
+  ['Cloud · Azure', [['/azure/cloud-shell/', 'Cloud Shell / script'], ['/azure/manual/', 'Manual setup']]],
+  ['Help & reference', [['/verify/', 'Verify connection'], ['/troubleshooting/', 'Troubleshooting'], ['/permissions/', 'Permissions'], ['/downloads/', 'Templates & scripts'], ['/security/', 'Security & revocation']]]
 ];
 export const sourcePages = [
   {path:'/aws/cloudformation/',title:'Connect AWS with CloudFormation',description:'Review the stack. Launch your customer-specific connection. Verify the result.',file:'install/aws-cloudformation.md',cloud:'AWS',label:'Recommended · automated',next:'/verify/'},
