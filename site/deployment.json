@@ -1,0 +1,43 @@
+{
+  "provider": "Cloudflare Pages",
+  "account": "TransilienceAI",
+  "accountId": "a67cd8e63ae24260ddecdcbadd4910aa",
+  "project": "transilience-cloud-onboarding",
+  "productionBranch": "main",
+  "domain": "cloudonboarding.transilience.dev",
+  "pagesDomain": "transilience-cloud-onboarding.pages.dev",
+  "dns": {
+    "type": "CNAME",
+    "name": "cloudonboarding.transilience.dev",
+    "target": "transilience-cloud-onboarding.pages.dev",
+    "proxied": true
+  },
+  "workflow": {
+    "install": "cd site && npm ci --ignore-scripts",
+    "validate": "npm run build && npm test && node --check public/app.js",
+    "localPreview": "npm run preview",
+    "deploy": "npm run deploy",
+    "authentication": "Use an already authorized Wrangler session or a narrowly scoped Cloudflare Pages deployment token. Never commit a credential.",
+    "automaticDeployments": false,
+    "ci": "The GitHub workflow validates and uploads the static Pages artifact; production publication is explicit."
+  },
+  "boundaries": {
+    "staticOnly": true,
+    "workerFunctions": false,
+    "durableObjects": false,
+    "credentialCollection": false,
+    "customerProvisioning": false,
+    "emailSending": false,
+    "localOnlyQA": "test/responsive-preview.html is served only by the local preview server and is excluded from dist."
+  },
+  "maintenance": [
+    "The simple setup pages follow Permissions → Install → Verify; source install guides and installer snapshots remain unchanged.",
+    "Audit, Logs and Both are instruction buckets, not backend permission overrides. Automated logs-only limitations must remain visible.",
+    "Publish only the reviewed screenshot allowlist in guides.mjs; review screenshots.json before changing it.",
+    "Review changes to the source install guides and update sourceCommit in content.mjs when adopting a newer reviewed baseline.",
+    "Refresh public production installer snapshots only after reviewing their trust model, permission manifest, and callback behavior.",
+    "Run all checks and desktop/mobile browser QA before publishing.",
+    "Verify the custom-domain HTTPS response, security headers, download hashes, and actual rendered page after deployment.",
+    "Do not replace customer-specific connector values with values from screenshots or invent a new workload identity because the portal is hosted on Cloudflare."
+  ]
+}

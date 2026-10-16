@@ -1,0 +1,16 @@
+{
+  "reviewed": "2026-10-16",
+  "policy": "Publish only the explicitly reviewed navigation screenshots in guides.mjs. Never copy the full source assets folder. Client-secret, subscription-ID, trust-policy and existing-role inventory views are deliberately excluded.",
+  "repositoryScreenshots": {
+    "source": "https://github.com/transilienceai/docs/tree/079477426ae1df1a94f9ff43472826ba16e281c9/assets",
+    "publishedPath": "/screenshots/",
+    "transforms": "None; byte-for-byte copies. Captions clarify navigation-only use."
+  },
+  "azureCloudShellToolbar": {
+    "file": "public/screenshots/azure-cloud-shell.png",
+    "source": "https://learn.microsoft.com/en-us/azure/cloud-shell/get-started/media/new-storage/shell-icon.png",
+    "reference": "https://learn.microsoft.com/en-us/azure/cloud-shell/get-started/new-storage",
+    "transforms": "None",
+    "review": "Public Microsoft Learn toolbar image; no credentials, tenant identity or customer data."
+  }
+}

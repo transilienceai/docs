@@ -1,0 +1,415 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Transilience Managed Compliance - SecurityAudit Read-Only Onboarding'
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: "Transilience Configuration"
+        Parameters:
+          - CustomerEmail
+          - CustomerName
+    ParameterLabels:
+      CustomerEmail:
+        default: "Your Email Address"
+      CustomerName:
+        default: "Your Company Name"
+
+Parameters:
+  CustomerEmail:
+    Type: String
+    Default: ""
+    Description: Optional contact email for legacy launches; TPSE resolves the verified signup email from ConnectToken
+    AllowedPattern: "(^$)|(^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$)"
+    ConstraintDescription: Must be blank or a valid email address
+
+  CustomerName:
+    Type: String
+    Description: Your company or organization name
+    MinLength: 2
+    MaxLength: 100
+
+  ConnectToken:
+    Type: String
+    Default: ""
+    Description: One-time, non-credentialed correlation token (auto-filled by Transilience; do not modify)
+
+  TransilienceBackendUrl:
+    Type: String
+    Default: "https://transilience-customer-prod--transilience-onboarding-onbo-d5f413.modal.run/onboarding/create"
+    Description: Transilience backend API endpoint (do not modify)
+
+  TransilienceBackendApiKey:
+    Type: String
+    Default: "mcs-onboarding-2026-05-13-static-key"
+    Description: Transilience backend API key (do not modify)
+    NoEcho: true
+
+Resources:
+  #============================================================================
+  # OIDC Identity Provider for Modal.com — created IDEMPOTENTLY via a custom
+  # resource. A raw AWS::IAM::OIDCProvider with DeletionPolicy: Retain made
+  # every REINSTALL fail: the retained provider survives stack deletion, and
+  # the next stack create 409s with EntityAlreadyExists. The Lambda below
+  # creates the provider only if missing, succeeds if it already exists, and
+  # leaves it in place on stack delete (same retain semantics, no 409).
+  #============================================================================
+  OidcSetupLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: EnsureModalOidcProvider
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - iam:CreateOpenIDConnectProvider
+                  - iam:GetOpenIDConnectProvider
+                  - iam:TagOpenIDConnectProvider
+                Resource: !Sub 'arn:aws:iam::${AWS::AccountId}:oidc-provider/oidc.modal.com'
+      Tags:
+        - Key: Purpose
+          Value: Transilience-Managed-Compliance
+
+  OidcSetupFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Description: Idempotently ensures the oidc.modal.com IAM OIDC provider exists
+      Runtime: python3.12
+      Handler: index.handler
+      Role: !GetAtt OidcSetupLambdaRole.Arn
+      Timeout: 30
+      MemorySize: 128
+      Code:
+        ZipFile: |
+          import json
+          import boto3
+          import cfnresponse
+
+          OIDC_URL = 'https://oidc.modal.com'
+          CLIENT_ID = 'oidc.modal.com'
+          THUMBPRINT = '9e99a48a9960b14926bb7f3b02e22da2b0ab7280'
+
+          def handler(event, context):
+              print(json.dumps({
+                  'RequestType': event.get('RequestType'),
+                  'StackId': event.get('StackId'),
+                  'LogicalResourceId': event.get('LogicalResourceId')
+              }))
+              account_id = context.invoked_function_arn.split(':')[4]
+              provider_arn = f"arn:aws:iam::{account_id}:oidc-provider/oidc.modal.com"
+              # Stable physical id so CloudFormation never replaces this resource.
+              physical_id = provider_arn
+
+              if event.get('RequestType') == 'Delete':
+                  # Leave the provider in place — it may be shared with other
+                  # stacks/roles. This preserves the old Retain semantics.
+                  cfnresponse.send(event, context, cfnresponse.SUCCESS,
+                                   {'ProviderArn': provider_arn}, physical_id)
+                  return
+
+              try:
+                  iam = boto3.client('iam')
+                  try:
+                      resp = iam.create_open_id_connect_provider(
+                          Url=OIDC_URL,
+                          ClientIDList=[CLIENT_ID],
+                          ThumbprintList=[THUMBPRINT],
+                          Tags=[
+                              {'Key': 'Purpose', 'Value': 'Transilience-Managed-Compliance'},
+                              {'Key': 'CreatedBy', 'Value': 'Transilience-CloudFormation'},
+                          ],
+                      )
+                      provider_arn = resp['OpenIDConnectProviderArn']
+                      print(f"Created OIDC provider: {provider_arn}")
+                  except iam.exceptions.EntityAlreadyExistsException:
+                      print(f"OIDC provider already exists: {provider_arn}")
+
+                  cfnresponse.send(event, context, cfnresponse.SUCCESS,
+                                   {'ProviderArn': provider_arn}, physical_id)
+              except Exception as e:
+                  print(f"Error: {e}")
+                  cfnresponse.send(event, context, cfnresponse.FAILED,
+                                   {'Error': str(e)}, physical_id)
+      Tags:
+        - Key: Purpose
+          Value: Transilience-Managed-Compliance
+
+  ModalOIDCProvider:
+    Type: Custom::TransilienceOidcProvider
+    Properties:
+      ServiceToken: !GetAtt OidcSetupFunction.Arn
+
+  #============================================================================
+  # IAM Role for Transilience Access
+  # Name is stack-scoped so multiple stacks can coexist in the same account.
+  #============================================================================
+  TransilienceComplianceRole:
+    Type: AWS::IAM::Role
+    # The trust policy references the oidc.modal.com provider ARN, so the
+    # provider must exist before IAM validates the role.
+    DependsOn: ModalOIDCProvider
+    Properties:
+      Description: Role for Transilience Managed Compliance service to access AWS resources
+      MaxSessionDuration: 3600
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowModalOIDCAssumeRole
+            Effect: Allow
+            Principal:
+              Federated: !Sub "arn:aws:iam::${AWS::AccountId}:oidc-provider/oidc.modal.com"
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                "oidc.modal.com:aud": "oidc.modal.com"
+              StringLike:
+                "oidc.modal.com:sub":
+                  - "modal:workspace_id:ac-v1CZ9TWcqA7282i3kcFYa9:*"
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/SecurityAudit
+      # SecurityAudit intentionally covers security-configuration metadata and
+      # does not grant Billing/Cost Explorer data access. The Cloud Cost
+      # Analysis pack uses only this read operation; keep it separate and
+      # least-privilege instead of attaching the broad Billing policy.
+      Policies:
+        - PolicyName: TransilienceCostExplorerReadOnly
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Sid: ReadExactCostAndUsageWindows
+                Effect: Allow
+                Action:
+                  - ce:GetCostAndUsage
+                Resource: '*'
+      Tags:
+        - Key: Purpose
+          Value: Transilience-Managed-Compliance
+        - Key: CreatedBy
+          Value: Transilience-CloudFormation
+        - Key: CustomerEmail
+          Value: !Ref CustomerEmail
+
+  #============================================================================
+  # Lambda Execution Role for the Registration Function
+  # Name is stack-scoped to avoid conflicts.
+  #============================================================================
+  RegistrationLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Tags:
+        - Key: Purpose
+          Value: Transilience-Registration
+
+  #============================================================================
+  # Lambda Function to Register with Transilience Backend
+  # Name is stack-scoped to avoid conflicts.
+  #============================================================================
+  RegistrationFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Description: Registers AWS account with Transilience backend on stack creation
+      Runtime: python3.12
+      Handler: index.handler
+      Role: !GetAtt RegistrationLambdaRole.Arn
+      Timeout: 120
+      MemorySize: 128
+      Environment:
+        Variables:
+          BACKEND_URL: !Ref TransilienceBackendUrl
+          BACKEND_API_KEY: !Ref TransilienceBackendApiKey
+      Code:
+        ZipFile: |
+          import json
+          import urllib.request
+          import urllib.error
+          import os
+          import cfnresponse
+
+          def handler(event, context):
+              """
+              CloudFormation Custom Resource handler.
+              Sends account registration data to Transilience backend.
+              """
+              print(json.dumps({
+                  'RequestType': event.get('RequestType'),
+                  'StackId': event.get('StackId'),
+                  'LogicalResourceId': event.get('LogicalResourceId')
+              }))
+
+              request_type = event.get('RequestType', '')
+              onboarding_request_type = (
+                  'Create' if request_type == 'Update' else request_type
+              )
+
+              try:
+                  properties = event.get('ResourceProperties', {})
+                  account_id = properties.get('AccountId')
+                  role_arn = properties.get('RoleArn')
+                  role_name = properties.get('RoleName')
+                  customer_email = properties.get('CustomerEmail')
+                  customer_name = properties.get('CustomerName')
+                  customer_name = ''.join((customer_name or '').strip().split())
+                  connect_token = properties.get('ConnectToken')
+                  stack_id = event.get('StackId', '')
+                  region = properties.get('Region')
+
+                  payload = {
+                      'account_id': account_id,
+                      'role_arn': role_arn,
+                      'role_name': role_name,
+                      'customer_email': customer_email,
+                      'customer_name': customer_name,
+                      'connect_token': connect_token,
+                      'stack_id': stack_id,
+                      'region': region,
+                      'request_type': onboarding_request_type,
+                      'cloudformation_request_type': request_type,
+                      'provider': 'aws',
+                      'source': 'cloudformation-onboarding'
+                  }
+
+                  print(json.dumps({
+                      'backend_url': os.environ.get('BACKEND_URL'),
+                      'account_id': account_id,
+                      'role_arn': role_arn,
+                      'customer_name': customer_name,
+                      'stack_id': stack_id,
+                      'region': region,
+                      'request_type': request_type
+                  }))
+
+                  backend_url = os.environ.get('BACKEND_URL')
+                  backend_api_key = os.environ.get('BACKEND_API_KEY')
+
+                  req = urllib.request.Request(
+                      backend_url,
+                      data=json.dumps(payload).encode('utf-8'),
+                      headers={
+                          'Content-Type': 'application/json',
+                          'User-Agent': 'Transilience-CloudFormation-Onboarding/1.0',
+                          'X-API-Key': backend_api_key
+                      },
+                      method='POST'
+                  )
+
+                  # Clerk persistence and initial app scheduling can exceed
+                  # the former 25-second timeout. Keep the HTTP timeout below
+                  # the Lambda timeout while allowing that work to finish.
+                  with urllib.request.urlopen(req, timeout=90) as response:
+                      response_body = response.read().decode('utf-8')
+                      print(f"Backend response: {response_body}")
+
+                      cfnresponse.send(event, context, cfnresponse.SUCCESS, {
+                          'Message': (
+                              'Successfully disconnected from Transilience'
+                              if request_type == 'Delete'
+                              else 'Successfully registered with Transilience'
+                          ),
+                          'AccountId': account_id,
+                          'RoleArn': role_arn
+                      })
+
+              except urllib.error.HTTPError as e:
+                  error_body = e.read().decode('utf-8') if e.fp else str(e)
+                  print(f"HTTP Error: {e.code} - {error_body}")
+                  if request_type == 'Delete':
+                      cfnresponse.send(event, context, cfnresponse.SUCCESS, {
+                          'Message': f'Stack deletion continuing; disconnect callback failed: {error_body}',
+                          'Warning': 'Disconnect the AWS account in Security OS if it still appears connected.'
+                      })
+                  else:
+                      cfnresponse.send(event, context, cfnresponse.FAILED, {
+                          'Message': f'Role created but registration failed: {error_body}',
+                          'Warning': 'Please contact support@transilience.ai'
+                      }, reason=f'Onboarding registration failed with HTTP {e.code}')
+
+              except Exception as e:
+                  print(f"Error: {str(e)}")
+                  if request_type == 'Delete':
+                      cfnresponse.send(event, context, cfnresponse.SUCCESS, {
+                          'Message': f'Stack deletion continuing; disconnect callback failed: {str(e)}',
+                          'Warning': 'Disconnect the AWS account in Security OS if it still appears connected.'
+                      })
+                  else:
+                      cfnresponse.send(event, context, cfnresponse.FAILED, {
+                          'Message': f'Role created but registration encountered an error: {str(e)}',
+                          'Warning': 'Please contact support@transilience.ai'
+                      }, reason='Onboarding registration failed')
+      Tags:
+        - Key: Purpose
+          Value: Transilience-Registration
+
+  #============================================================================
+  # Custom Resource to Trigger Registration
+  #============================================================================
+  AccountRegistration:
+    Type: Custom::TransilienceRegistration
+    DependsOn:
+      - TransilienceComplianceRole
+    Properties:
+      ServiceToken: !GetAtt RegistrationFunction.Arn
+      AccountId: !Ref AWS::AccountId
+      RoleArn: !GetAtt TransilienceComplianceRole.Arn
+      RoleName: !Ref TransilienceComplianceRole
+      CustomerEmail: !Ref CustomerEmail
+      CustomerName: !Ref CustomerName
+      ConnectToken: !Ref ConnectToken
+      Region: !Ref AWS::Region
+      Timestamp: !Sub "${AWS::StackName}-${AWS::Region}"
+      CallbackRevision: "2026-08-24-source-reconciled"
+
+#============================================================================
+# Outputs
+#============================================================================
+Outputs:
+  AccountId:
+    Description: AWS Account ID that was onboarded
+    Value: !Ref AWS::AccountId
+    Export:
+      Name: !Sub "${AWS::StackName}-AccountId"
+
+  RoleArn:
+    Description: ARN of the Transilience Compliance Role
+    Value: !GetAtt TransilienceComplianceRole.Arn
+    Export:
+      Name: !Sub "${AWS::StackName}-RoleArn"
+
+  RoleName:
+    Description: Name of the Transilience Compliance Role
+    Value: !Ref TransilienceComplianceRole
+    Export:
+      Name: !Sub "${AWS::StackName}-RoleName"
+
+  OIDCProviderArn:
+    Description: ARN of the Modal OIDC Provider
+    Value: !GetAtt ModalOIDCProvider.ProviderArn
+    Export:
+      Name: !Sub "${AWS::StackName}-OIDCProviderArn"
+
+  OnboardingStatus:
+    Description: Status of the onboarding registration
+    Value: !GetAtt AccountRegistration.Message
+
+  PermissionsSummary:
+    Description: Summary of permissions granted
+    Value: "SecurityAudit"
